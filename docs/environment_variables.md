@@ -2,7 +2,7 @@
 변수를 도커 명령줄에서 환경 변수로 전달하려면
 예:
 ```
-sudo docker run -d -e 'YOUR_VAR=VALUE' richarvey/nginx-php-fpm
+sudo docker run -d -e 'YOUR_VAR=VALUE' rester/rester-docker
 ```
 그런 다음 PHP를 사용하여 환경 변수를 코드로 가져올 수 있다.
 ```
