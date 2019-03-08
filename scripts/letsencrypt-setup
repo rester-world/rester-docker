@@ -15,6 +15,6 @@ else
   sed -i "s#root /var/www/html;#root ${webroot};#g" /etc/nginx/sites-available/default-ssl.conf
  fi
 
- supervisorctl restart nginx
+ nginx -s reload
  
 fi
