@@ -16,7 +16,7 @@ if [[ "$HTTPS_REDIRECTION" == "1" ]]; then
 	listen 80;
 	server_name _;
 	return 301 https://$host$request_uri;
-    }";
+    }" >> /etc/nginx/sites-enabled/default-ssl.conf;
 fi
 
  nginx -s reload
