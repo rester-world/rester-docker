@@ -12,11 +12,11 @@ else
  sed -i "s#root /var/www/html;#root ${WEBROOT};#g" /etc/nginx/sites-available/default-ssl.conf
 
 if [[ "$HTTPS_REDIRECTION" == "1" ]]; then
- echo "server {
+ echo 'server {
 	listen 80;
 	server_name _;
 	return 301 https://$host$request_uri;
-    }" >> /etc/nginx/sites-enabled/default-ssl.conf;
+    }' >> /etc/nginx/sites-enabled/default-ssl.conf;
 fi
 
  nginx -s reload
