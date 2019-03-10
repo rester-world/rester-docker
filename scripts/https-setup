@@ -13,8 +13,7 @@ else
 
 if [[ "$HTTPS_REDIRECTION" == "1" ]]; then
  echo "server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+	listen 80;
 	server_name _;
 	return 301 https://$host$request_uri;
     }";
