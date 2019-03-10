@@ -230,7 +230,7 @@ RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/defau
 ADD scripts/start.sh /start.sh
 ADD scripts/https-setup /https-setup
 ADD scripts/https-renew /https-renew
-RUN chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew && chmod 755 /start.sh
+RUN chmod 755 /usr/bin/https-setup && chmod 755 /usr/bin/https-renew && chmod 755 /start.sh
 
 # COPY src
 COPY ./src /var/www/html/
