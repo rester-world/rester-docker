@@ -13,12 +13,7 @@ if [ ! -z "$SSH_KEY" ]; then
  chmod 600 /root/.ssh/id_rsa
 fi
 
-# Set custom webroot
-if [ ! -z "$WEBROOT" ]; then
- sed -i "s#root /var/www/html;#root ${WEBROOT};#g" /etc/nginx/sites-available/default.conf
-else
- webroot=/var/www/html
-fi
+webroot=/var/www/html
 
 # Enable custom nginx config files if they exist
 if [ -f /var/www/html/conf/nginx/nginx.conf ]; then

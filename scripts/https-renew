@@ -6,7 +6,7 @@ if [ -z "$DOMAIN" ]; then
 else
  if [ -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
   certbot renew
-  supervisorctl restart nginx
+  nginx -s reload
  else
   echo "There is no cert to renew"
  fi
