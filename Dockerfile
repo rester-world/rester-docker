@@ -228,14 +228,13 @@ RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/defau
 
 # Add Scripts
 ADD scripts/start.sh /start.sh
-ADD scripts/https-setup /https-setup
-ADD scripts/https-renew /https-renew
-RUN chmod 755 /https-setup && chmod 755 /https-renew && chmod 755 /start.sh
+ADD scripts/https-setup.sh /https-setup.sh
+ADD scripts/https-renew.sh /https-renew.sh
+RUN chmod 755 /https-setup.sh && chmod 755 /https-renew.sh && chmod 755 /start.sh
 
 # COPY src
 COPY ./src /var/www/html/
 
 EXPOSE 443 80
 
-VOLUME ["/etc/letsencrypt"]
 CMD ["/start.sh"]
