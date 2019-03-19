@@ -237,4 +237,5 @@ COPY ./src /var/www/html/
 
 EXPOSE 443 80
 
+VOLUME ["/etc/letsencrypt"]
 CMD ["/start.sh"]
