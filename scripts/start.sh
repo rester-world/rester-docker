@@ -13,22 +13,6 @@ if [ ! -z "$SSH_KEY" ]; then
  chmod 600 /root/.ssh/id_rsa
 fi
 
-webroot=/var/www/html
-
-# Enable custom nginx config files if they exist
-if [ -f /var/www/html/conf/nginx/nginx.conf ]; then
-  cp /var/www/html/conf/nginx/nginx.conf /etc/nginx/nginx.conf
-fi
-
-if [ -f /var/www/html/conf/nginx/nginx-site.conf ]; then
-  cp /var/www/html/conf/nginx/nginx-site.conf /etc/nginx/sites-available/default.conf
-fi
-
-if [ -f /var/www/html/conf/nginx/nginx-site-ssl.conf ]; then
-  cp /var/www/html/conf/nginx/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
-fi
-
-
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
 if [[ $lastlinephpconf == *"php_flag[display_errors]"* ]]; then
@@ -121,19 +105,6 @@ else
     fi
 fi
 
-if [ ! -z "$PUID" ]; then
-  if [ -z "$PGID" ]; then
-    PGID=${PUID}
-  fi
-  deluser nginx
-  addgroup -g ${PGID} nginx
-  adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
-else
-  if [ -z "$SKIP_CHOWN" ]; then
-    chown -Rf nginx.nginx /var/www/html
-  fi
-fi
-
 # Run custom scripts
 if [[ "$RUN_SCRIPTS" == "1" ]] ; then
   if [ -d "/var/www/html/scripts/" ]; then
@@ -159,6 +130,9 @@ if [ -z "$SKIP_COMPOSER" ]; then
     fi
 fi
 
+if [[ "$ENABLE_HTTPS" == "1" ]] ; then
+ sh /https-setup.sh
+fi
+
 # Start supervisord and services
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
-

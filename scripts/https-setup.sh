@@ -1,10 +1,14 @@
 #!/bin/bash
 
-if [ -z "$EMAIL" ] || [ -z "$DOMAIN" ] || [ ! -f "/etc/nginx/sites-available/default-ssl.conf" ]; then
+if [ -z "$WEBROOT" ] || [ -z "$EMAIL" ] || [ -z "$DOMAIN" ] || [ ! -f "/etc/nginx/sites-available/default-ssl.conf" ]; then
  echo "You need the \$EMAIL and the \$DOMAIN variables and default-ssl.conf file"
 else
+ if [ ! -d "/etc/letsencrypt/live" ]; then
+    mkdir /etc/letsencrypt/live
+ fi
+
  if [ ! -d  "/etc/letsencrypt/live/$DOMAIN" ]; then
-    certbot certonly --webroot -w /var/www/html -d $DOMAIN --email $EMAIL --agree-tos --quiet
+    certbot certonly --webroot -w $WEBROOT -d $DOMAIN --email $EMAIL --agree-tos --quiet
  fi
 
  if [ ! -f "/etc/letsencrypt/live/privkey.pem" ]; then

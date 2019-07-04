@@ -1,6 +1,8 @@
 FROM php:7.2.4-fpm-alpine
 MAINTAINER Woong-Gi Jeon <jeon.wbbi@gmail.com>
 
+ENV WEBROOT /var/www/html
+
 ENV php_conf /usr/local/etc/php-fpm.conf
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
@@ -14,7 +16,7 @@ ENV PHPREDIS_VERSION 4.2.0
 
 # resolves #166
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
+RUN apk add --no-cache --repository gnu-libiconv
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
   && CONFIG="\
@@ -233,7 +235,7 @@ ADD scripts/https-renew.sh /https-renew.sh
 RUN chmod 755 /https-setup.sh && chmod 755 /https-renew.sh && chmod 755 /start.sh
 
 # COPY src
-COPY ./src /var/www/html/
+COPY ./src ${WEBROOT}
 
 EXPOSE 443 80
 
