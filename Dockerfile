@@ -222,8 +222,8 @@ COPY ./conf/php-fpm.conf ${php_conf}
 COPY ./conf/www.conf ${fpm_conf}
 COPY ./conf/docker-vars.ini ${php_vars}
 
-ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
-ADD conf/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
+ADD conf/default.conf /etc/nginx/sites-available/default.conf
+ADD conf/default-ssl.conf /etc/nginx/sites-available/default-ssl.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
 # Add Scripts
