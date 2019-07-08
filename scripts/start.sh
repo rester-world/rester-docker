@@ -130,9 +130,10 @@ if [ -z "$SKIP_COMPOSER" ]; then
     fi
 fi
 
+# Start supervisord and services
+exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+
 if [[ "$ENABLE_HTTPS" == "1" ]] ; then
  sh /https-setup.sh
 fi
 
-# Start supervisord and services
-exec /usr/bin/supervisord -n -c /etc/supervisord.conf
