@@ -130,21 +130,13 @@ if [ -z "$SKIP_COMPOSER" ]; then
     fi
 fi
 
-# Start supervisord and services
-exec /usr/bin/supervisord -n -c /etc/supervisord.conf
-
 if [[ "$ENABLE_HTTPS" == "1" ]] ; then
-    echo "Enable-Https"
-
-    if [ -z "$WEBROOT" ] || [ -z "$EMAIL" ] || [ -z "$DOMAIN" ] || [ ! -f "/etc/nginx/sites-available/default-ssl.conf" ]; then
+    if [ -z "$EMAIL" ] || [ -z "$DOMAIN" ] || [ ! -f "/etc/nginx/sites-available/default-ssl.conf" ]; then
      echo "You need the \$EMAIL and the \$DOMAIN variables and default-ssl.conf file"
     else
-     if [ ! -d "/etc/letsencrypt/live" ]; then
-        mkdir /etc/letsencrypt/live
-     fi
 
      if [ ! -d  "/etc/letsencrypt/live/$DOMAIN" ]; then
-        certbot certonly --webroot -w $WEBROOT -d $DOMAIN --email $EMAIL --agree-tos --quiet
+        certbot certonly --standalone -d aws.wbbi.me --email jeon.wbbi@gmail.com --agree-tos --quiet
      fi
 
      if [ ! -f "/etc/letsencrypt/live/privkey.pem" ]; then
@@ -159,7 +151,10 @@ if [[ "$ENABLE_HTTPS" == "1" ]] ; then
         ln -s /etc/nginx/sites-available/default-ssl.conf /etc/nginx/sites-enabled/
      fi
 
-     nginx -s reload
     fi
 fi
+
+# Start supervisord and services
+exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+
 
