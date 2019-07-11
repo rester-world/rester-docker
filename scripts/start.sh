@@ -136,7 +136,7 @@ if [[ "$ENABLE_HTTPS" == "1" ]] ; then
     else
 
      if [ ! -d  "/etc/letsencrypt/live/$DOMAIN" ]; then
-        certbot certonly --standalone -d aws.wbbi.me --email jeon.wbbi@gmail.com --agree-tos --quiet
+        certbot certonly --standalone -d $DOMAIN --email $EMAIL --agree-tos --quiet
      fi
 
      if [ ! -f "/etc/letsencrypt/live/privkey.pem" ]; then
