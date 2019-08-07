@@ -1,5 +1,4 @@
-FROM php:7.2.4-fpm-alpine
-MAINTAINER Woong-Gi Jeon <jeon.wbbi@gmail.com>
+FROM php:7.3.8-fpm-alpine3.9
 
 ENV WEBROOT /var/www/html
 
@@ -7,12 +6,11 @@ ENV php_conf /usr/local/etc/php-fpm.conf
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 
-ENV NGINX_VERSION 1.14.0
-ENV LUA_MODULE_VERSION 0.10.13
+ENV NGINX_VERSION 1.16.0
+ENV LUA_MODULE_VERSION 0.10.14
 ENV DEVEL_KIT_MODULE_VERSION 0.3.0
 ENV LUAJIT_LIB=/usr/lib
 ENV LUAJIT_INC=/usr/include/luajit-2.1
-ENV PHPREDIS_VERSION 4.2.0
 
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
@@ -73,7 +71,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
     gcc \
     libc-dev \
     make \
-    openssl-dev \
+    libressl-dev \
     pcre-dev \
     zlib-dev \
     linux-headers \
@@ -152,18 +150,24 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 
 RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
     echo /etc/apk/respositories && \
-    apk update && \
-    apk add --no-cache bash \
+    apk update && apk upgrade &&\
+    apk add --no-cache \
+    bash \
     openssh-client \
     wget \
     supervisor \
     curl \
     libcurl \
+    libzip-dev \
+    bzip2-dev \
+    imap-dev \
+    openssl-dev \
+    git \
     python \
     python-dev \
     py-pip \
     augeas-dev \
-    openssl-dev \
+    libressl-dev \
     ca-certificates \
     dialog \
     autoconf \
@@ -179,32 +183,33 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     libffi-dev \
     freetype-dev \
     sqlite-dev \
-    libjpeg-turbo-dev && \
+    libjpeg-turbo-dev \
+    postgresql-dev && \
     docker-php-ext-configure gd \
       --with-gd \
       --with-freetype-dir=/usr/include/ \
       --with-png-dir=/usr/include/ \
       --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
+    #curl iconv session
+    #docker-php-ext-install pdo_mysql pdo_sqlite mysqli mcrypt gd exif intl xsl json soap dom zip opcache && \
+    docker-php-ext-install iconv pdo_mysql pdo_sqlite pgsql pdo_pgsql mysqli gd exif intl xsl json soap dom zip opcache && \
+    pecl install xdebug-2.7.2 && \
+    pecl install -o -f redis && \
+    echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini && \
     docker-php-source delete && \
     mkdir -p /etc/nginx && \
     mkdir -p /var/www/app && \
     mkdir -p /run/nginx && \
     mkdir -p /var/log/supervisor && \
-    EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-    php composer-setup.php --install-dir=/usr/bin --filename=composer && \
-    php -r "unlink('composer-setup.php');"  && \
+    php composer-setup.php --quiet --install-dir=/usr/bin --filename=composer && \
+    rm composer-setup.php && \
     pip install -U pip && \
     pip install -U certbot && \
     mkdir -p /etc/letsencrypt/webrootauth && \
     apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev make autoconf
-
-RUN mkdir -p /usr/src/php/ext/redis \
-    && curl -L https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
-    && echo 'redis' >> /usr/src/php-available-exts \
-    && docker-php-ext-install redis
+#    apk del .sys-deps
+#    ln -s /usr/bin/php7 /usr/bin/php
 
 ADD conf/supervisord.conf /etc/supervisord.conf
 
@@ -218,8 +223,6 @@ mkdir -p /etc/nginx/sites-enabled/ && \
 mkdir -p /etc/nginx/ssl/ && \
 rm -Rf /var/www/* && \
 mkdir /var/www/html/
-
-COPY ./conf/php-fpm.conf ${php_conf}
 
 ADD conf/default.conf /etc/nginx/sites-available/default.conf
 ADD conf/default-ssl.conf /etc/nginx/sites-available/default-ssl.conf
