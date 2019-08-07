@@ -14,9 +14,8 @@ ENV LUAJIT_LIB=/usr/lib
 ENV LUAJIT_INC=/usr/include/luajit-2.1
 ENV PHPREDIS_VERSION 4.2.0
 
-# resolves #166
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-RUN apk add --no-cache --repository gnu-libiconv
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
   && CONFIG="\
