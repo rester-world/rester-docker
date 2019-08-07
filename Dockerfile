@@ -221,8 +221,6 @@ rm -Rf /var/www/* && \
 mkdir /var/www/html/
 
 COPY ./conf/php-fpm.conf ${php_conf}
-COPY ./conf/www.conf ${fpm_conf}
-COPY ./conf/docker-vars.ini ${php_vars}
 
 ADD conf/default.conf /etc/nginx/sites-available/default.conf
 ADD conf/default-ssl.conf /etc/nginx/sites-available/default-ssl.conf
